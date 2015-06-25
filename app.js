@@ -18,18 +18,13 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'ejs');
 
-var CommentSchema = new mongoose.Schema({
-	name:String,
-	comment:String
-})
 var MessageSchema = new mongoose.Schema({
 	name:String,
 	message:String,
-	comments: [CommentSchema]
+	comments: [{name:String, comment:String}]
 })
 
 var Message = mongoose.model('Message', MessageSchema);
-var Comment = mongoose.model('Comment', CommentSchema);
 
 // root route
 app.get('/', function(req, res) {
@@ -37,7 +32,6 @@ app.get('/', function(req, res) {
 		if(err){
 			console.log('something went wrong');
 		} else {
-			console.log(messages);
 			res.render('index',{data:messages});
 		}
 	})
@@ -56,10 +50,11 @@ app.post('/message',function(req,res){
 })
 app.post('/message/:id',function(req,res){
 	console.log("POST DATA", req.body);
-	var comment = new Comment({name:req.body.name, comment: req.body.comment});
-	Message.findbyIdandUpdate(req.params.id,{$push: {comments: comment}}, function (err, message){
+	//var comment = new Comment({name:req.body.name, comment: req.body.comment});
+	Message.findByIdAndUpdate(req.params.id,{$push: { 'comments': {name:req.body.name, comment: req.body.comment}}}, function (err, message){
 		if(err){
 			console.log('something went wrong');
+			console.log(err);
 		} else {
 			console.log('yay');
 			res.redirect('/');

@@ -47,6 +47,23 @@
                     </div>
                 </div>
                 <br>
+                <% comments = data[i].comments %>
+                <% console.log(comments.length) %>
+                <% console.log(comments[0]) %>
+                <% for(var j = 0;j< data[i].comments.length;j++){ %>
+                    <div class="col-md-9 col-md-offset-2">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Name: <%= data[i].comments[j].name %>
+                            </div>
+                            <div class="panel-body">
+                                Comment: <%= data[i].comments[j].comment %>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                <% } %>
+                <br>
                 <div class="col-md-9 col-md-offset-2">
                     <form action="/message/<%= data[i]._id %>" method = "post" role = "form">
                         <div class="form-group">
@@ -61,17 +78,7 @@
                     </form>
                 </div>
             <% } %>
-            <div class="col-md-9 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Name: PERSON'S NAME HERE
-                    </div>
-                    <div class="panel-body">
-                        Comment: PERSON'S MESSAGE GOES HERE HERE HERE!!! PERSON'S MESSAGE GOES HERE HERE HERE!!! PERSON'S MESSAGE GOES HERE HERE HERE!!!
-                    </div>
-                </div>
-            </div>
-            <br>
+            
         </div>
     </div>
 </body>
