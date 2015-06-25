@@ -7,7 +7,7 @@ var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/players');
+mongoose.connect('mongodb://localhost/messageBoard');
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -18,10 +18,53 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'ejs');
 
+var CommentSchema = new mongoose.Schema({
+	name:String,
+	comment:String
+})
+var MessageSchema = new mongoose.Schema({
+	name:String,
+	message:String,
+	comments: [CommentSchema]
+})
+
+var Message = mongoose.model('Message', MessageSchema);
+var Comment = mongoose.model('Comment', CommentSchema);
 
 // root route
 app.get('/', function(req, res) {
-	res.render('index');
+	Message.find({},function(err,messages){
+		if(err){
+			console.log('something went wrong');
+		} else {
+			console.log(messages);
+			res.render('index',{data:messages});
+		}
+	})
+})
+app.post('/message',function(req,res){
+	console.log("POST DATA", req.body);
+	var message = new Message({name: req.body.name, message: req.body.message});
+	message.save(function(err){
+		if(err){
+			console.log('something went wrong');
+		} else {
+			console.log('message added');
+			res.redirect('/');
+		}
+	})
+})
+app.post('/message/:id',function(req,res){
+	console.log("POST DATA", req.body);
+	var comment = new Comment({name:req.body.name, comment: req.body.comment});
+	Message.findbyIdandUpdate(req.params.id,{$push: {comments: comment}}, function (err, message){
+		if(err){
+			console.log('something went wrong');
+		} else {
+			console.log('yay');
+			res.redirect('/');
+		}
+	})
 })
 // listen on 8000
 app.listen(8000, function() {
